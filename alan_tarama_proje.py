@@ -9,6 +9,36 @@ class AlanTaramaSimulasyonu:
         plt.ion()
         self.fig, self.ax = plt.subplots()
 
+    def koordinat_bul(self, irtifa, kamera_acisi_derece):
+        limit = 90 - math.degrees(self.dikey_fov_yarim)
+        if kamera_acisi_derece >= limit:
+            return None
+        
+        theta = math.radians(kamera_acisi_derece)
+        aci_yakin = theta - self.dikey_fov_yarim
+        aci_uzak  = theta + self.dikey_fov_yarim
+
+        y_yakin = irtifa * math.tan(aci_yakin)
+        y_uzak  = irtifa * math.tan(aci_uzak)
+
+        hipotenus_yakin = irtifa / math.cos(aci_yakin)
+        hipotenus_uzak  = irtifa / math.cos(aci_uzak)
+
+        w_yakin = 2 * hipotenus_yakin * math.tan(self.yatay_fov_yarim)
+        w_uzak  = 2 * hipotenus_uzak  * math.tan(self.yatay_fov_yarim)
+
+        koordinatlar = {
+            "sol_on":   (-w_yakin/2, y_yakin),
+            "sag_on":   ( w_yakin/2, y_yakin),
+            "sag_arka": ( w_uzak/2,  y_uzak),
+            "sol_arka": (-w_uzak/2,  y_uzak),
+            
+            "alt_taban": w_yakin,
+            "ust_taban": w_uzak,
+            "yukseklik_yer": y_uzak - y_yakin
+        }
+        return koordinatlar
+
     
     
     def alan_hesapla(self, veri):
